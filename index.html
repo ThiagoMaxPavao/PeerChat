@@ -22,7 +22,7 @@
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <script>
         var peer = new Peer();
-        var conn;
+        var connections = [];
 
         peer.on('open', function(id) {
             document.getElementById('my-id').textContent = id;
@@ -30,21 +30,26 @@
 
         function connectToPeer() {
             var peerId = document.getElementById('peer-id-input').value;
-            conn = peer.connect(peerId);
+            var conn = peer.connect(peerId);
 
             conn.on('open', function() {
+                connections.push(conn);
                 displayMessage('Conectado ao peer: ' + peerId);
             });
 
             conn.on('data', function(data) {
-                displayMessage('Peer: ' + data);
+                displayMessage('<i>Peer (' + conn.peer + '):</i> ' + data);
             });
         }
 
         function sendMessage() {
             var message = document.getElementById('message-input').value;
-            if (conn && conn.open) {
-                conn.send(message);
+            if (connections.length > 0) {
+                connections.forEach(function(conn) {
+                    if (conn.open) {
+                        conn.send(message);
+                    }
+                });
                 displayMessage('Você: ' + message);
                 document.getElementById('message-input').value = '';
             } else {
@@ -53,18 +58,18 @@
         }
 
         peer.on('connection', function(connection) {
-            conn = connection;
-            displayMessage('Um usuário conectou-se: ' + conn.peer);
+            connections.push(connection);
+            displayMessage('Um usuário conectou-se: ' + connection.peer);
 
-            conn.on('data', function(data) {
-                displayMessage('Peer: ' + data);
+            connection.on('data', function(data) {
+                displayMessage('<i>Peer (' + connection.peer + '):</i> ' + data);
             });
         });
 
         function displayMessage(message) {
             var messagesDiv = document.getElementById('messages');
             var newMessage = document.createElement('div');
-            newMessage.textContent = message;
+            newMessage.innerHTML = message;
             messagesDiv.appendChild(newMessage);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
