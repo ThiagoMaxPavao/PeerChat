@@ -1,0 +1,33 @@
+#connections-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#connections-table th, #connections-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+#chat-box {
+    margin-top: 20px;
+}
+
+#messages {
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 200px;
+    overflow-y: auto;
+}
+
+#connection-controls button:disabled,
+#chat-box button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Margem entre a caixa de texto de username e a de conectar-se com um peer */
+#username-input {
+    margin-bottom: 10px;
+}

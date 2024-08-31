@@ -4,75 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PeerJS Chat</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <h1>PeerJS Chat</h1>
     <p>Seu ID: <span id="my-id">...</span></p>
-    <input type="text" id="peer-id-input" placeholder="ID do peer para conectar">
-    <button onclick="connectToPeer()">Conectar</button>
+    
+    <input type="text" id="username-input" placeholder="Escolha seu username">
+    <button onclick="setUsername()">Definir Username</button>
+
+    <div id="connection-controls">
+        <input type="text" id="peer-id-input" placeholder="ID do peer para conectar" disabled>
+        <button onclick="connectToPeer()" disabled>Conectar</button>
+    </div>
+
+    <table id="connections-table">
+        <thead>
+            <tr>
+                <th>Peer ID</th>
+                <th>Username</th>
+            </tr>
+        </thead>
+        <tbody id="connections-body">
+            <!-- Conexões ativas aparecerão aqui -->
+        </tbody>
+    </table>
 
     <div id="chat-box" style="margin-top: 20px;">
-        <div id="messages" style="border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto;">
+        <div id="messages">
             <!-- Mensagens aparecerão aqui -->
         </div>
-        <input type="text" id="message-input" placeholder="Escreva sua mensagem">
-        <button onclick="sendMessage()">Enviar</button>
+        <input type="text" id="message-input" placeholder="Escreva sua mensagem" disabled>
+        <button onclick="sendMessage()" disabled>Enviar</button>
     </div>
 
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-    <script>
-        var peer = new Peer();
-        var connections = [];
-
-        peer.on('open', function(id) {
-            document.getElementById('my-id').textContent = id;
-        });
-
-        function connectToPeer() {
-            var peerId = document.getElementById('peer-id-input').value;
-            var conn = peer.connect(peerId);
-
-            conn.on('open', function() {
-                connections.push(conn);
-                displayMessage('Conectado ao peer: ' + peerId);
-            });
-
-            conn.on('data', function(data) {
-                displayMessage('<i>Peer (' + conn.peer + '):</i> ' + data);
-            });
-        }
-
-        function sendMessage() {
-            var message = document.getElementById('message-input').value;
-            if (connections.length > 0) {
-                connections.forEach(function(conn) {
-                    if (conn.open) {
-                        conn.send(message);
-                    }
-                });
-                displayMessage('Você: ' + message);
-                document.getElementById('message-input').value = '';
-            } else {
-                alert('Não está conectado a nenhum peer!');
-            }
-        }
-
-        peer.on('connection', function(connection) {
-            connections.push(connection);
-            displayMessage('Um usuário conectou-se: ' + connection.peer);
-
-            connection.on('data', function(data) {
-                displayMessage('<i>Peer (' + connection.peer + '):</i> ' + data);
-            });
-        });
-
-        function displayMessage(message) {
-            var messagesDiv = document.getElementById('messages');
-            var newMessage = document.createElement('div');
-            newMessage.innerHTML = message;
-            messagesDiv.appendChild(newMessage);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-    </script>
+    <script src="index.js"></script>
 </body>
 </html>
