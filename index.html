@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerJS Chat</title>
+</head>
+<body>
+    <h1>PeerJS Chat</h1>
+    <p>Seu ID: <span id="my-id">...</span></p>
+    <input type="text" id="peer-id-input" placeholder="ID do peer para conectar">
+    <button onclick="connectToPeer()">Conectar</button>
+
+    <div id="chat-box" style="margin-top: 20px;">
+        <div id="messages" style="border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto;">
+            <!-- Mensagens aparecerão aqui -->
+        </div>
+        <input type="text" id="message-input" placeholder="Escreva sua mensagem">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script>
+        var peer = new Peer();
+        var conn;
+
+        peer.on('open', function(id) {
+            document.getElementById('my-id').textContent = id;
+        });
+
+        function connectToPeer() {
+            var peerId = document.getElementById('peer-id-input').value;
+            conn = peer.connect(peerId);
+
+            conn.on('open', function() {
+                displayMessage('Conectado ao peer: ' + peerId);
+            });
+
+            conn.on('data', function(data) {
+                displayMessage('Peer: ' + data);
+            });
+        }
+
+        function sendMessage() {
+            var message = document.getElementById('message-input').value;
+            if (conn && conn.open) {
+                conn.send(message);
+                displayMessage('Você: ' + message);
+                document.getElementById('message-input').value = '';
+            } else {
+                alert('Não está conectado a nenhum peer!');
+            }
+        }
+
+        peer.on('connection', function(connection) {
+            conn = connection;
+            conn.on('data', function(data) {
+                displayMessage('Peer: ' + data);
+            });
+        });
+
+        function displayMessage(message) {
+            var messagesDiv = document.getElementById('messages');
+            var newMessage = document.createElement('div');
+            newMessage.textContent = message;
+            messagesDiv.appendChild(newMessage);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>
