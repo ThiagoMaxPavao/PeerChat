@@ -54,6 +54,8 @@
 
         peer.on('connection', function(connection) {
             conn = connection;
+            displayMessage('Um usuário conectou-se: ' + conn.peer);
+
             conn.on('data', function(data) {
                 displayMessage('Peer: ' + data);
             });
